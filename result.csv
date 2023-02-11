@@ -1,0 +1,103 @@
+title,score,id,name,url,author,selftext
+Beyond Transformers with PyNeuraLogic 🤖,3,10z497c,t3_10z497c,https://www.reddit.com/r/deeplearning/comments/10z497c/beyond_transformers_with_pyneuralogic/,Lukas_Zahradnik,"Going beyond Transformers? 🤖
+
+In this article, I'm discussing how we can use the power of hybrid architecture, i.e., marrying deep learning with symbolic artificial intelligence, for implementing different kinds of Transformers. Including the one used in GPT-3!
+
+[https://towardsdatascience.com/beyond-transformers-with-pyneuralogic-10b70cdc5e45](https://towardsdatascience.com/beyond-transformers-with-pyneuralogic-10b70cdc5e45)
+
+&#x200B;
+
+&#x200B;
+
+https://preview.redd.it/hnxkczd3ofha1.png?width=1400&format=png&auto=webp&v=enabled&s=7ff91f6bf8feab8a103b8b35df7fcf857fa7fd4c"
+Did anybody try LaneNet ?,5,10yynej,t3_10yynej,https://www.reddit.com/r/deeplearning/comments/10yynej/did_anybody_try_lanenet/,Puzzleheaded-Rest467,"Hi, I am working with LaneNet model, 
+
+I am trying the LaneNet model using   [MaybeShewill-CV](https://github.com/MaybeShewill-CV)/[**lanenet-lane-detection**](https://github.com/MaybeShewill-CV/lanenet-lane-detection)  Repo,   
+I have a dataset of 20k images, but the model loss results calculated as nan
+
+I tried to change training and validation batch sizes, but the results still NAN,   
+Can anybody to anticipate the problem?, can anyone help ?   
+And thanks :)"
+My Machine Learning: Learning Program,3,10z0ppo,t3_10z0ppo,https://www.reddit.com/r/deeplearning/comments/10z0ppo/my_machine_learning_learning_program/,Learning_DL,"
+Hi there, 
+
+I want to learn deep earning and be able to get a job as MLE. I did master in computer science, so I already know programming but in Java and also did some research internship in information retrieval fields, which is sub field in Artificial intelligence. I did not applied deep learning methods but more traditional models like tf-idf and simple language models (not deep learning langage models). I would nit say that I am good at math, probabilities and statistics. My goal is to be good at NLP, So I have to learn from scratch:
+
+\- Python (but I know programming and I already program in Java)
+
+\- Maths, statistics and probabilities
+
+\- Deep Learning basics 
+
+\- NLP focus
+
+I am planning to follow :
+
+\- The NLP Book  (Speech and Language Processing): Part 1 and 2 
+
+\- Deep learning book [https://www.deeplearningbook.org/](https://www.deeplearningbook.org/) 
+
+\- Pattern Recognition and Machine Learning: only probability parts: chapter 1 and 2
+
+&#x200B;
+
+I will spend 40h a week end for 6 months, so 1000h of work. Is it enough or not? 
+
+Thanks for your feedback and recommendation"
+Dataset Abuse Is Rife in Computer Vision – But the Solutions May Be Drastic,8,10yqhhy,t3_10yqhhy,https://metaphysic.ai/dataset-abuse-is-rife-in-computer-vision-but-the-solutions-may-be-drastic/,bissembert,
+Preprocessing data for CNN tips?,1,10yxf5c,t3_10yxf5c,https://www.reddit.com/r/deeplearning/comments/10yxf5c/preprocessing_data_for_cnn_tips/,Sufficient-Mine5750,"I’m fairly new to deep learning and learning as I got so sorry if this is very basic, but I’m working on a model for detecting [invasive coconut rhinoceros beetles](https://www.crbhawaii.org/)  destroying palm trees using drone photography. The 1080p photos I’m given were taken 250ft AGL and were cropped into equal size smaller images with some having one or more palm trees and some having none. Im using I’m using [labelStudio](https://github.com/heartexlabs/label-studio) to generate the XML files that point to their jpg counterparts path. 
+
+My current problem is inputting the XML into a CSV for training and validation on keras. Each of the cropped images are named the same like so:
+Drone_img1 
+  11.jpg
+  12.jpg
+ 13.jpg
+  …
+ 46.jpg
+
+Drone_img2
+  11.jpg
+  12.jpg
+ 13.jpg
+  …
+ 46.jpg
+
+Drone_img1000
+  11.jpg
+  12.jpg
+ 13.jpg
+  …
+ 46.jpg
+
+I’m using a python script a previous student wrote before me that is supposed to split the data for training and validation into different directories, create the csv file and create the model, but when I run it, it appears to have a problem with the cropped images having the same naming scheme. My test and validation directories now look like this:
+
+Test dir & validation dir 
+  11.jpg
+  11(1).jpg
+  11(2).jpg
+  12.jpg
+  13.jpg
+  13(1).jpg
+  152.jpg
+…
+   999.jpg
+  999(1).jpg
+  1000.jpg
+
+Note: the cropped images all had the same naming scheme but were in separate directories but when using a script to split into test & validation groups it thinks it’s getting a duplicate photo and adds a number in parenthesis.
+
+My question. Is there a better way to preprocess image data with xml annotations into csv without me having to change a 1000 image names manually? Keep in mind that the xml notations also point to their jpg names path so if I change the jpg names I’d have to change their xml annotations too."
+Help with Object detection,1,10yvcgk,t3_10yvcgk,https://www.reddit.com/r/deeplearning/comments/10yvcgk/help_with_object_detection/,harshalplus1,I've found that I can use Yolo algorithm to detect object but I need a code implementation of Yolo algorithm for custom object detection. I've an annoted dataset but I haven't come across any code implementation of it.
+"[R] Robust Learning: the past and present. The DNN has strong fitting capability, but we find ...",1,10yry3a,t3_10yry3a,/r/MachineLearning/comments/z49k7x/r_robust_learning_the_past_and_present_the_dnn/,XinshaoWang,
+[Tutorial] Introduction to Tensors in TensorFlow,8,10ybaz5,t3_10ybaz5,https://www.reddit.com/r/deeplearning/comments/10ybaz5/tutorial_introduction_to_tensors_in_tensorflow/,sovit-123,"Introduction to Tensors in TensorFlow
+
+[https://debuggercafe.com/introduction-to-tensors-in-tensorflow/](https://debuggercafe.com/introduction-to-tensors-in-tensorflow/)
+
+&#x200B;
+
+https://preview.redd.it/k9oci84pa9ha1.png?width=1000&format=png&auto=webp&v=enabled&s=c1155ccdd41ad312d8d6dac993e937ea3a3f5dfa"
+Choose a video format for real time classifier,2,10y8p6r,t3_10y8p6r,https://www.reddit.com/r/deeplearning/comments/10y8p6r/choose_a_video_format_for_real_time_classifier/,michaelgavlin2,"Hi guys, i am trying to figure out what is the video format I should record all my data - which is major and important decision to make.
+I have a camera that takes video in 4k, located inside a vehicle. The first and obvious one is mp4, and can be achieved immediately using the hardware I already have. The second option is to purchase a logger system that records the raw data in a lossless format, which generates about ten times larger than the files. My application is a real-time NN classifier for a driver assist system.
+This data should be used for training and for testing purposes. I have done a comparison visually and using a python script, the difference is about 2%, and the images looks pretty similar but the mp4 is a bit smoother.
+🙏Lookign forward to hearing about your experience."
+*The Rise of Multi-Model Deep Learning: Transforming the Way We Solve Complex Problems* https://www.linkedin.com/posts/ashishpatel2604_machinelearning-computervision-deeplearning-activity-7029682864258523136-z8eD,0,10yi38u,t3_10yi38u,https://www.reddit.com/r/deeplearning/comments/10yi38u/the_rise_of_multimodel_deep_learning_transforming/,Ashishpatel26,
