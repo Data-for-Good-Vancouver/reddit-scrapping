@@ -1,1 +1,16 @@
+# Enviroment
+venv/
 .env
+
+# Cache
+__pycache__
+.ipynb_checkpoints
+
+# Results
+*.csv
+*.pkl
+*.
+
+# IDE
+.vscode/
+.idea/
