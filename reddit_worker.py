@@ -40,8 +40,8 @@ class SubRedditWorker:
     subreddit: str
     reddit_instance: praw.Reddit
     exporter: RedditsExporter
-    starting_interval: int = 300  # 5 minutes
-    interval_step: int = 30
+    starting_interval: int = 6000  # 10 minutes
+    interval_step: int = 60
     submissions_amount: int = 1000
 
     def __post_init__(self) -> None:
