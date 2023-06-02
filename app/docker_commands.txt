@@ -1,0 +1,22 @@
+# Get credentials
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 806876135148.dkr.ecr.us-east-1.amazonaws.com
+
+# Docker build
+docker build -t dfg-reddit .
+
+#optional docker build no cache
+docker build --no-cache -t dfg-reddit .   
+docker build --no-cache -t dfg-reddit:latest-x86 . --platform=linux/amd64    
+
+#tagging
+docker tag dfg-reddit:latest 806876135148.dkr.ecr.us-east-1.amazonaws.com/dfg-reddit:latest
+#tagging x86
+docker tag dfg-reddit:latest-x86 806876135148.dkr.ecr.us-east-1.amazonaws.com/dfg-reddit:latest-x86
+
+#upload
+docker push 806876135148.dkr.ecr.us-east-1.amazonaws.com/dfg-reddit:latest
+
+docker push 806876135148.dkr.ecr.us-east-1.amazonaws.com/dfg-reddit:latest-x86
+
+#run to test
+docker run --env-file=.env -p 9000:8080 dfg-reddit

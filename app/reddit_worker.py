@@ -5,6 +5,7 @@ from functools import cached_property
 from dataclasses import dataclass
 from typing import Optional, Protocol
 from time import sleep
+import boto3
 
 import pandas as pd
 
@@ -23,11 +24,18 @@ class IncrementalCSVExporter:
             df.to_csv(
                 self.path,
                 mode='a',
-                header=False
+                header=False,
+                index=False
             )
         else:
             df.to_csv(self.path)
 
+class S3Exporter():
+    def __init__(self, base_path: str) -> None:
+        self.base_path = base_path
+
+    def export(self, df: pd.DataFrame) -> None:
+        df.to_parquet(f'{self.base_path}/{dt.datetime.now():%d-%m-%YT%H:%M}', index=False)
 
 COLUMNS = [  # TODO use this as default but allow to pass it as parameter
     'title', 'score', 'id', 'name', 'url',
@@ -71,24 +79,29 @@ class SubRedditWorker:
         )
         df['created_utc'] = df['created_utc'].map(dt.datetime.fromtimestamp)
         return df
+    
+    def run_once(self) -> None:
+        submissions = self._get_lasts_submissions()
+        self.exporter.export(submissions)
 
-    def run(self) -> None:
-        interval = self.starting_interval
-        last_post = None
-        while True:
-            submissions = self._get_lasts_submissions()
-            if last_post is not None:
-                submissions = submissions[
-                    submissions['created_utc'] > last_post['created_utc']
-                ]
-            self.exporter.export(submissions)
+async def run_forever(reddit_worker) -> None:
+    interval = reddit_worker.starting_interval
+    last_post = None
+    while True:
+        submissions = reddit_worker._get_lasts_submissions()
+        if last_post is not None:
+            submissions = submissions[
+                submissions['created_utc'] > last_post['created_utc']
+            ]
+        reddit_worker.exporter.export(submissions)
 
-            if len(submissions) == 1000:
-                interval -= self.interval_step
-                interval = 1 if interval < 1 else interval
-            elif submissions.empty:
-                interval += self.interval_step
+        if len(submissions) == 1000:
+            interval -= reddit_worker.interval_step
+            interval = 1 if interval < 1 else interval
+        elif submissions.empty:
+            interval += reddit_worker.interval_step
 
-            last_post = submissions.iloc[0] if not submissions.empty else last_post
-            print(f'{interval=}')
-                
+        last_post = submissions.iloc[0] if not submissions.empty else last_post
+        print(f'{interval=}')
+        sleep(interval)
+
