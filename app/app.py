@@ -1,25 +1,69 @@
 import sys
 import os
+import re
+import json
+import time
 from datetime import datetime
 
 import boto3
+from botocore.config import Config
 import praw
 from reddit_worker import SubRedditWorker, S3Exporter
 
-def update_event_schedule(subreddit: str, arn: str):
-    name=f'DFG-reddit-{subreddit}'
-    group = 'DFG-socials'
-    scheduler_client = boto3.client('schedule')
+AWS_CONFIG = Config(
+    region_name = 'us-east-1',
+    retries = {
+        'max_attempts': 10,
+        'mode': 'standard'
+    }
+)
 
-    scheduler = scheduler_client.get_schedule(GroupName=group, Name=name)
-    target = scheduler['Target'][0]
+MINUTES_DELTA = 10
 
+def update_event_schedule(posts_updated: int, events_client, rule):
+    needs_update = posts_updated>200 or posts_updated<800
+    if not needs_update: 
+        return
+
+    #TODO change schedule
+    schedule_expression = rule['ScheduleExpression']
+    minutes = int(re.search(r'rate\((\d+) minutes\)', schedule_expression).group(1))
+
+    schedule_expression=''
+    if posts_updated<200:
+        minutes += MINUTES_DELTA
+    elif posts_updated>800:
+        minutes -= MINUTES_DELTA
     
-    scheduler_client.update_schedule(
-        Name=name,
-        schedule_expression=f'rate(1 minute)',
-        Target=target
+    
+    schedule_expression=f'rate({minutes} minutes)'
+
+    events_client.put_rule(
+        Name=rule['Name'],
+        ScheduleExpression=schedule_expression,
+        State='ENABLED',
+        Description=rule.get('Description', ''),
+        EventBusName=rule['EventBusName']
     )
+
+def update_rule_target(event, events_client, rule):
+    #TODO update last run parameter
+    event['last_run'] = time.strftime('%Y-%m-%dT%H:%M:00')
+    target = events_client.list_targets_by_rule(
+        Rule=rule['Name'],
+        EventBusName='default'
+    )['Targets'][0]
+
+    put_target_resp = events_client.put_targets(
+        Rule=rule['Name'],
+        Targets=[{
+            'Id': target['Id'],
+            'Arn': target['Arn'],
+            'Input': json.dumps(event),
+        }]
+    )
+    return put_target_resp
+
 
 def save_new_data(subreddit: str, last_run: datetime) -> int:
 
@@ -37,33 +81,35 @@ def save_new_data(subreddit: str, last_run: datetime) -> int:
         exporter=S3Exporter(f's3://dataforgood-socials/{subreddit}')
     )
     posts = worker._get_lasts_submissions()
-    posts = posts[posts['created_utc']>last_run]
+    if last_run:
+        posts = posts[posts['created_utc']>last_run]
     if len(posts)>0:
         worker.exporter.export(posts)
     return len(posts)
 
 def handler(event, context):
-    return 'Hello from AWS Lambda using Python' + sys.version + '! update 1'      
-    print(context.invoked_function_arn)
+    # print(context.invoked_function_arn)
     subreddit = event['subreddit']
     last_run = event['last_run']
 
-    print(context.invoked_function_arn)
-    print(context.function_name)
-    arn = context.invoked_function_arn
+    # print(context.invoked_function_arn)
+    # print(context.function_name)
 
     posts_updated: int = save_new_data(subreddit, last_run)
-    needs_update = posts_updated>200 or posts_updated<800
     
-    if posts_updated<200:
-        needs_update = True
-        schedule_expression=f'rate(1 minute)'
-        
-    elif posts_updated>800:
-        needs_update = True
-        schedule_expression=f'rate(1 minute)'
-    #TODO update last run
+    #rule data
+    rule_name=f'DFG-reddit-{subreddit}'
+    events_client = boto3.client(
+        'events',
+        config=AWS_CONFIG
+    )
+    rule = events_client.list_rules(
+        NamePrefix=rule_name,
+        EventBusName='default',
+        Limit=1
+    )['Rules'][0]
 
-    if needs_update:
-        update_event_schedule(subreddit, arn)
+    update_event_schedule(posts_updated, events_client, rule)
+    update_rule_target(event, events_client, rule)
+
     return f'{posts_updated} were saved'

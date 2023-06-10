@@ -35,7 +35,7 @@ class S3Exporter():
         self.base_path = base_path
 
     def export(self, df: pd.DataFrame) -> None:
-        df.to_parquet(f'{self.base_path}/{dt.datetime.now():%d-%m-%YT%H:%M}', index=False)
+        df.to_parquet(f'{self.base_path}/{dt.datetime.now().strftime("%Y-%m-%dT%H:%M")}.parquet', index=False)
 
 COLUMNS = [  # TODO use this as default but allow to pass it as parameter
     'title', 'score', 'id', 'name', 'url',
@@ -66,7 +66,7 @@ class SubRedditWorker:
                     submission.id,
                     submission.name,
                     submission.url,
-                    submission.author,
+                    submission.author.name if submission.author else None,
                     submission.selftext,
                     submission.approved_at_utc,
                     submission.banned_at_utc,
