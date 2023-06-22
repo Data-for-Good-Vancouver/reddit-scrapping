@@ -30,9 +30,9 @@ def update_event_schedule(posts_updated: int, events_client, rule):
     minutes = int(re.search(r'rate\((\d+) minutes\)', schedule_expression).group(1))
 
     schedule_expression=''
-    if posts_updated<200:
+    if posts_updated<200 and minutes<1440: #max 24 hours span
         minutes += MINUTES_DELTA
-    elif posts_updated>800:
+    elif posts_updated>800 and minutes>10: #min 10 minuets
         minutes -= MINUTES_DELTA
     
     

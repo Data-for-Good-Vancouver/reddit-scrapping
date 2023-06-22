@@ -33,3 +33,11 @@ docker push 806876135148.dkr.ecr.us-east-1.amazonaws.com/dfg-reddit:latest-x86
 
 #run to test
 docker run --env-file=.env -p 9000:8080 dfg-reddit
+
+
+aws lambda add-permission \
+--function-name DFG-reddit-x86 \
+--statement-id DFG-reddit-BCpolitics \
+--action 'lambda:InvokeFunction' \
+--principal events.amazonaws.com \
+--source-arn arn:aws:events:us-east-1:806876135148:rule/DFG-reddit-BCpolitics
