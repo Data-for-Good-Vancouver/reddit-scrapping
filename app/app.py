@@ -25,7 +25,6 @@ def update_event_schedule(posts_updated: int, events_client, rule):
     if not needs_update: 
         return
 
-    #TODO change schedule
     schedule_expression = rule['ScheduleExpression']
     minutes = int(re.search(r'rate\((\d+) minutes\)', schedule_expression).group(1))
 
@@ -47,7 +46,6 @@ def update_event_schedule(posts_updated: int, events_client, rule):
     )
 
 def update_rule_target(event, events_client, rule):
-    #TODO update last run parameter
     event['last_run'] = time.strftime('%Y-%m-%dT%H:%M:00')
     target = events_client.list_targets_by_rule(
         Rule=rule['Name'],
@@ -88,12 +86,8 @@ def save_new_data(subreddit: str, last_run: datetime) -> int:
     return len(posts)
 
 def handler(event, context):
-    # print(context.invoked_function_arn)
     subreddit = event['subreddit']
     last_run = event['last_run']
-
-    # print(context.invoked_function_arn)
-    # print(context.function_name)
 
     posts_updated: int = save_new_data(subreddit, last_run)
     
