@@ -1,11 +1,9 @@
 import os
 import praw
 import datetime as dt
-from functools import cached_property
 from dataclasses import dataclass
-from typing import Optional, Protocol
+from typing import Protocol
 from time import sleep
-import boto3
 
 import pandas as pd
 
