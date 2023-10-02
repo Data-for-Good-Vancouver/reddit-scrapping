@@ -1,4 +1,3 @@
-import sys
 import os
 import re
 import json
@@ -10,32 +9,39 @@ from botocore.config import Config
 import praw
 from reddit_worker import SubRedditWorker, S3Exporter
 
+
+MINUTES_DELTA = 10
 AWS_CONFIG = Config(
-    region_name = 'us-east-1',
-    retries = {
+    region_name='us-east-1',
+    retries={
         'max_attempts': 10,
         'mode': 'standard'
     }
 )
 
-MINUTES_DELTA = 10
 
 def update_event_schedule(posts_updated: int, events_client, rule):
-    needs_update = posts_updated>200 or posts_updated<800
-    if not needs_update: 
+    needs_update = posts_updated > 200 or posts_updated < 800
+    if not needs_update:
         return
 
     schedule_expression = rule['ScheduleExpression']
-    minutes = int(re.search(r'rate\((\d+) minutes\)', schedule_expression).group(1))
+    minutes_search = re.search(
+            r'rate\((\d+) minutes\)',
+            schedule_expression
+        )
+    if minutes_search:
+        minutes = int(minutes_search.group(1))
+    else:
+        raise ValueError('The schedule expression is not minutes.')
+    minutes = 1440 if minutes > 1440 else minutes
+    minutes = 10 if minutes < 10 else minutes
 
-    schedule_expression=''
-    if posts_updated<200 and minutes<1440: #max 24 hours span
+    if posts_updated < 200 and minutes < 1440:  # max 24 hours span
         minutes += MINUTES_DELTA
-    elif posts_updated>800 and minutes>10: #min 10 minuets
+    elif posts_updated > 800 and minutes > 10:  # min 10 minuets
         minutes -= MINUTES_DELTA
-    
-    
-    schedule_expression=f'rate({minutes} minutes)'
+    schedule_expression = f'rate({minutes} minutes)'
 
     events_client.put_rule(
         Name=rule['Name'],
@@ -44,6 +50,7 @@ def update_event_schedule(posts_updated: int, events_client, rule):
         Description=rule.get('Description', ''),
         EventBusName=rule['EventBusName']
     )
+
 
 def update_rule_target(event, events_client, rule):
     event['last_run'] = time.strftime('%Y-%m-%dT%H:%M:00')
@@ -80,19 +87,20 @@ def save_new_data(subreddit: str, last_run: datetime) -> int:
     )
     posts = worker._get_lasts_submissions()
     if last_run:
-        posts = posts[posts['created_utc']>last_run]
-    if len(posts)>0:
+        posts = posts[posts['created_utc'] > last_run]
+    if len(posts) > 0:
         worker.exporter.export(posts)
     return len(posts)
 
+
 def handler(event, context):
-    subreddit = event['subreddit']
-    last_run = event['last_run']
+    subreddit: str = event['subreddit']
+    last_run: datetime = event['last_run']
 
     posts_updated: int = save_new_data(subreddit, last_run)
-    
-    #rule data
-    rule_name=f'DFG-reddit-{subreddit}'
+
+    # rule data
+    rule_name = f'DFG-reddit-{subreddit}'
     events_client = boto3.client(
         'events',
         config=AWS_CONFIG
