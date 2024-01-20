@@ -48,3 +48,10 @@ image_resize.zip
 # Dependency ignores
 wand
 Wand-0.4.2-py2.7.egg-info
+
+
+.DS_Store
+
+# Data
+*.csv
+*.parquet
