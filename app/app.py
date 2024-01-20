@@ -5,8 +5,11 @@ import time
 from datetime import datetime
 
 import boto3
-from botocore.config import Config
+import pandas as pd
 import praw
+from botocore.config import Config
+
+from link_description import get_meta_description
 from reddit_worker import SubRedditWorker, S3Exporter
 
 
@@ -85,7 +88,11 @@ def save_new_data(subreddit: str, last_run: datetime) -> int:
         reddit_instance=reddit,
         exporter=S3Exporter(f's3://dataforgood-socials/{subreddit}')
     )
-    posts = worker._get_lasts_submissions()
+    posts: pd.DataFrame = worker._get_lasts_submissions()
+    posts['self_text'] = posts.apply(
+        lambda row: row['self_text'] if pd.notna(row['selftext']) else get_meta_description(row['url']),
+        axis=1
+    )
     if last_run:
         posts = posts[posts['created_utc'] > last_run]
     if len(posts) > 0:
@@ -94,10 +101,9 @@ def save_new_data(subreddit: str, last_run: datetime) -> int:
 
 
 def handler(event, context):
+    # params
     subreddit: str = event['subreddit']
     last_run: datetime = event['last_run']
-
-    posts_updated: int = save_new_data(subreddit, last_run)
 
     # rule data
     rule_name = f'DFG-reddit-{subreddit}'
@@ -111,6 +117,10 @@ def handler(event, context):
         Limit=1
     )['Rules'][0]
 
+    #get and save new posts
+    posts_updated: int = save_new_data(subreddit, last_run)
+
+    # update event
     update_event_schedule(posts_updated, events_client, rule)
     update_rule_target(event, events_client, rule)
 
