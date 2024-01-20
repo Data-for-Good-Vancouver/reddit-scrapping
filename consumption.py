@@ -5,10 +5,15 @@ BUCKET = 'dataforgood-socials'
 
 def get_subreddit_files(subreddit: str):
     s3 = boto3.client('s3')
-    files = [file['Key'] for file in s3.list_objects_v2(
-        Bucket=BUCKET,
+    paginator = s3.get_paginator('list_objects_v2')
+    pages = paginator.paginate(
+        Bucket=BUCKET, 
         Prefix=subreddit if subreddit.endswith('/') else subreddit + '/'
-    )['Contents']]
+    )
+    files = []
+    for page in pages:
+        for obj in page['Contents']:
+            files.append(obj['Key'])
     files = list(filter(lambda file: file.endswith('.parquet'), files))
     return files
 
