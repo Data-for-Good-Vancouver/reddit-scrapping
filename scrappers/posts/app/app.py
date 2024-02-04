@@ -89,8 +89,8 @@ def save_new_data(subreddit: str, last_run: datetime) -> int:
         exporter=S3Exporter(f's3://dataforgood-socials/{subreddit}')
     )
     posts: pd.DataFrame = worker._get_lasts_submissions()
-    posts['self_text'] = posts.apply(
-        lambda row: row['self_text'] if pd.notna(row['selftext']) else get_meta_description(row['url']),
+    posts['selftext'] = posts.apply(
+        lambda row: get_meta_description(row['url']) if row['selftext']=='' else row['selftext'],
         axis=1
     )
     if last_run:

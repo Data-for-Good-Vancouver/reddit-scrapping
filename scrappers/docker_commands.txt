@@ -41,3 +41,10 @@ aws lambda add-permission \
 --action 'lambda:InvokeFunction' \
 --principal events.amazonaws.com \
 --source-arn arn:aws:events:us-east-1:806876135148:rule/DFG-reddit-BCpolitics
+
+aws lambda add-permission \
+--function-name DFG-reddit-x86 \
+--statement-id DFG-reddit-BCpolitics \
+--action 'lambda:InvokeFunction' \
+--principal events.amazonaws.com \
+--source-arn arn:aws:events:us-east-1:806876135148:rule/DFG-reddit-BCpolitics
